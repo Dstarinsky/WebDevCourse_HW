@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Contact</title>
+  <link rel="stylesheet" href="contact.css">
+</head>
+<body>
+
+  <div class="overlay">
+    <div class="contact-box">
+      <h1>Contact</h1>
+      <table class="contact-form">
+        <tr>
+          <th colspan="2" class="title">Send a Message</th>
+        </tr>
+        <tr>
+          <td>Name:</td>
+          <td><input type="text" id="name"></td>
+        </tr>
+        <tr>
+          <td>Email:</td>
+          <td><input type="email" id="email"></td>
+        </tr>
+        <tr>
+          <td>Phone:</td>
+          <td><input type="tel" id="phone"></td>
+        </tr>
+        <tr>
+          <td>Subject:</td>
+          <td><input type="text" id="subject"></td>
+        </tr>
+        <tr>
+          <td>Message:</td>
+          <td><textarea id="message"></textarea></td>
+        </tr>
+        <tr>
+          <td colspan="2" class="button-cell">
+            <input type="button" value="Send Message" onclick="showAlert()">
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
