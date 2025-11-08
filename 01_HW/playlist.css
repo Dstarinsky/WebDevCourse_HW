@@ -45,3 +45,7 @@ body {
     color: blue;
     font-weight: bold;
   }
+
+  .link:hover{
+    color: #9BB4C0;
+  }
