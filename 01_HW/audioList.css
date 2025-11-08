@@ -51,3 +51,30 @@ body {
     padding: 4px;
     box-sizing: border-box;
   }
+
+.navbar {
+    background: #4f8dfd;
+    padding: 12px 0;
+    text-align: center;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .navbar a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: color 0.2s, background 0.2s, padding 0.2s;
+    padding: 6px 10px;
+    border-radius: 5px;
+  }
+  
+  .navbar a:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #f5f5f5;
+  }
+  
+  .navbar a.active {
+    background: #2b66e2;
+  }
