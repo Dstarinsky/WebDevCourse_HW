@@ -1,34 +1,43 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f7f9fc;
+    background: #f5f5f5;
+    margin: 0;
+    padding: 30px;
+  }
+  
+  .title {
     text-align: center;
-    margin: 30px;
-}
-
-h1 {
-    color: #333;
-}
-
-table {
-    width: 90%;
-    margin: 0 auto;
+    margin-bottom: 25px;
+    color: #222;
+  }
+  
+  .song-table {
+    width: 100%;
     border-collapse: collapse;
-    background-color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-th,
-td {
-    border: 1px solid #ddd;
-    padding: 10px;
-}
-
-th {
-    background-color: #0078d7;
+    background: white;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .song-table th {
+    background: #2c6fdd;
     color: white;
-}
-
-img {
-    width: 120px;
-    border-radius: 5px;
-}
+    padding: 12px 10px;
+    text-align: left;
+    font-size: 15px;
+    border: 1px solid #222;
+  }
+  
+  .song-table td {
+    padding: 20px 10px;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+    border: 1px solid #222;
+  }
+  
+  .video-cell {
+    width: 350px;
+  }
+  
+  .song-table tr:hover {
+    background: #f0f5ff;
+  }

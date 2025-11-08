@@ -1,44 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chill Music Playlist</title>
-    <link rel="stylesheet" href="playlist.css">
+  <link rel="stylesheet" href="playlist.css">
 </head>
-
 <body>
-    <h1>☕ Chill & Lofi Playlist 🎧</h1>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Track Name</th>
-                <th>Type</th>
-                <th>Thumbnail</th>
-                <th>Video</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Lofi Beats to Relax/Study</td>
-                <td>Stream</td>
-                <td><img src="https://i.ytimg.com/vi/jfKfPfyJRdk/hqdefault.jpg" alt="Lofi Girl"></td>
-                <td><iframe width="250" height="140" src="https://www.youtube.com/embed/jfKfPfyJRdk" frameborder="0"
-                        allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowfullscreen></iframe></td>
-            </tr>
+<h1 class="title">My Favorite Songs</h1>
 
-            <tr>
-                <td>Morning Coffee Jazz</td>
-                <td>Jazz/Chill</td>
-                <td><img src="https://i.ytimg.com/vi/Dx5qFachd3A/hqdefault.jpg" alt="Coffee Jazz"></td>
-                <td><iframe width="250" height="140" src="https://www.youtube.com/embed/Dx5qFachd3A" frameborder="0"
-                        allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowfullscreen></iframe></td>
-            </tr>
+<table class="song-table">
+  <thead>
+    <tr>
+      <th>Song Name</th>
+      <th>Tags</th>
+      <th>Video</th>
+    </tr>
+  </thead>
 
-        </tbody>
-    </table>
+  <tbody>
+    <tr>
+      <td>CHILL LOFI ROOM</td>
+      <td>Chill WorkMusic</td>
+      <td class="video-cell">
+        <iframe width="300" height="170"
+          src="https://www.youtube.com/embed/jfKfPfyJRdk"
+          frameborder="0" allowfullscreen></iframe>
+      </td>
+    </tr>
+
+    <tr>
+      <td>Metallica Acoustic Medley II</td>
+      <td>Relax, Study & Sleeping Ambience</td>
+      <td class="video-cell">
+        <iframe width="300" height="170" src="https://www.youtube.com/embed/m2EOZbBdB2g?si=DPdkuegNxUTdloHK"
+         frameborder="0" allowfullscreen>
+        </iframe>
+      </td>
+    </tr>
+
+    <tr>
+      <td>Best Classic Rock Songs Of All Time</td>
+      <td>Guns N' Roses, Nirvara, Metallica, Queen, Bon Jovi, AC/DC, U2</td>
+      <td class="video-cell">
+        <iframe width="300" height="170" src="https://www.youtube.com/embed/8gvOJUZgDqk?si=alvWav3l0_C4CCTa" 
+        frameborder="0" allowfullscreen>
+    </iframe>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
 </body>
-
 </html>
