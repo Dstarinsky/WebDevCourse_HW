@@ -1,0 +1,53 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f3f3f3;
+    padding: 30px;
+  }
+  
+  .music-table-wrapper {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    background: #fff;
+    width: 100%;               
+    box-sizing: border-box; 
+    padding: 10px;
+    display: inline-block;
+  }
+  
+  .music-table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 800px;
+  }
+  
+  .music-table th,
+  .music-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+    vertical-align: middle;
+  }
+  
+  .music-table th {
+    background: #333;
+    color: #fff;
+    font-weight: bold;
+  }
+  
+  .music-table tr:nth-child(even) td {
+    background: #f7f7f7;
+  }
+  
+  .cover-img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    display: block;
+  }
+  
+  .audio-player {
+    width: 100%;
+    border: 2px solid #38b000;
+    border-radius: 8px;
+    padding: 4px;
+    box-sizing: border-box;
+  }
