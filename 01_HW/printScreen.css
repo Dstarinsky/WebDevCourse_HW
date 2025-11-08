@@ -1,0 +1,45 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f8f9fa;
+    padding: 40px;
+    text-align: center;
+  }
+  
+  h1 {
+    margin-bottom: 25px;
+    color: #333;
+  }
+  
+  .commit-table {
+    margin: 0 auto;
+    border-collapse: collapse;
+    width: 80%;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  
+  .commit-table th,
+  .commit-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+    vertical-align: middle;
+  }
+  
+  .commit-table th {
+    background: #4f8dfd;
+    color: white;
+    font-size: 16px;
+  }
+  
+  .commit-table tr:nth-child(even) {
+    background: #f2f5ff;
+  }
+  
+  .commit-table img {
+    width: 180px;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
