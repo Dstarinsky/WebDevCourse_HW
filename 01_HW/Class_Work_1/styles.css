@@ -1,0 +1,117 @@
+:root{
+    --accent:#2196F3;
+    --bg:#0f1116;
+    --panel:#141720;
+    --surface:#ffffff;
+    --text:#0e0f12;
+    --text-inv:#eef2ff;
+    --gap:16px;
+    --radius:12px;
+  }
+  
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font:16px/1.5 system-ui,Segoe UI,Roboto,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+  }
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;cursor:pointer}
+  
+  .header,.footer,.sidebar{
+    background:var(--panel);
+    color:var(--text-inv);
+    padding:12px var(--gap);
+    border-radius:var(--radius);
+    margin:var(--gap);
+  }
+  .content{
+    background:var(--surface);
+    color:var(--text);
+    padding:16px;
+    border-radius:var(--radius);
+    margin:var(--gap);
+  }
+  .btn{background:#e9eef8;border:1px solid #d3d9e6;color:#0e0f12;padding:8px 12px;border-radius:10px}
+  .btn.ghost{background:transparent;border:1px solid #d3d9e6;color:var(--text-inv)}
+  .nav-btn{background:transparent;border:1px solid #293044;color:var(--text-inv);padding:8px 12px;border-radius:10px;margin:0 4px}
+  .nav-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  .header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:var(--gap);
+  }
+  
+
+  .header .nav{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    flex:1;
+  }
+  
+
+  
+  .header .actions{
+    display:flex;
+    gap:8px;
+  }
+  .main{
+    display:flex;
+    gap:var(--gap);
+    margin:var(--gap);
+  }
+  
+
+  
+  .sidebar{
+    flex:0 0 240px;      
+  }
+  
+
+  
+  .content{
+    flex:1;             
+  }
+  .footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+
+  @media(max-width:900px){
+    .main{flex-direction:column}
+    .header{flex-wrap:wrap}
+  }
+
+  html, body {
+    height: 100%;          
+  }
+  
+  body {
+    display: flex;          
+    flex-direction: column; 
+  }
+  
+  .main {
+    flex: 1;                
+  }
+  
+  .nav-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  
+  body.light {
+    --bg:#f8f8fb;
+    --panel:#ffffff;
+    --surface:#ffffff;
+    --text:#111;
+    --text-inv:#000;
+    background:var(--bg);
+    color:var(--text);
+  }
