@@ -1,0 +1,55 @@
+body {
+    background-color: #111;
+    color: #ff2ba0;
+    min-height: 100vh;
+}
+
+/* dark card */
+.calc-card {
+    background-color: #000;
+    border-radius: 1.2rem;
+    border: 1px solid #333;
+    box-shadow: 0 0 18px rgba(0, 0, 0, 0.6);
+}
+
+/* labels */
+label {
+    font-weight: 500;
+}
+
+/* inputs */
+.form-control,
+.form-select,
+textarea {
+    background-color: #111;
+    color: #ff2ba0;
+    border-color: #ff2ba0;
+}
+
+.form-control:focus,
+.form-select:focus,
+textarea:focus {
+    box-shadow: 0 0 0 0.15rem rgba(255, 43, 160, 0.45);
+    border-color: #ff2ba0;
+}
+
+/* buttons */
+.btn-magenta {
+    color: #ff2ba0;
+    border-color: #ff2ba0;
+}
+
+.btn-magenta:hover {
+    background-color: #ff2ba0;
+    color: #000;
+}
+
+/* result box */
+#answer {
+    min-height: 2.7rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ff2ba0;
+    display: flex;
+    align-items: center;
+}
