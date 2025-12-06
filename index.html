@@ -1,144 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
-
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-
-    <style>
-        body {
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .header {
-            height: 58px;
-            background: #ffffff;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .sidebar {
-            width: 230px;
-            background: #f8f9fa;
-            border-right: 1px solid #ddd;
-            overflow-y: auto;
-        }
-
-        .main-area {
-            overflow: hidden;
-        }
-
-        iframe {
-            border: none;
-            width: 100%;
-            height: calc(100vh - 58px - 40px);
-        }
-
-        footer {
-            height: 40px;
-            line-height: 40px;
-            background: #f1f1f1;
-            border-top: 1px solid #ccc;
-        }
-
-        /* MOBILE SIDEBAR COLLAPSE */
-        @media (max-width: 768px) {
-            .sidebar {
-                position: absolute;
-                z-index: 999;
-                height: 100vh;
-                left: -230px;
-                top: 58px;
-                transition: all .3s;
-            }
-
-            .sidebar.show {
-                left: 0;
-            }
-        }
-    </style>
+    <title>David Starinsky</title>
+    <link rel="stylesheet" href="https://bootswatch.com/5/cyborg/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+<body class="p-4">
+<div class="container">
+    <h1 class="text-center text-primary mb-4">Excercise Songs List</h1>
 
-<body class="d-flex flex-column">
+    <!-- Add / Edit form -->
+    <div class="card border-primary mb-4">
+        <div class="card-body">
+            <form id="songForm" class="row g-2 align-items-center">
+                <input type="hidden" id="songId">
 
-    <!-- HEADER -->
-    <header class="header d-flex align-items-center px-3 justify-content-between shadow-sm">
-        <div class="d-flex align-items-center gap-2">
-            <button class="btn btn-outline-secondary d-md-none" onclick="toggleSidebar()">
-                <i class="fas fa-bars"></i>
-            </button>
+                <div class="col-md-4">
+                    <input type="text" id="title" class="form-control" placeholder="Song Title" required>
+                </div>
+                <div class="col-md-4">
+                    <input type="url" id="url" class="form-control" placeholder="YouTube URL" required>
+                </div>
 
-            <img src="logo.png" width="36" height="36" class="rounded" alt="logo">
+                <!-- Rating radio buttons -->
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <span class="me-2">Rating</span>
+                        <div class="btn-group" role="group" aria-label="Rating">
+                            <input type="radio" class="btn-check" name="rating" id="rate1" value="1" required>
+                            <label class="btn btn-outline-info btn-sm" for="rate1">1</label>
 
-            <h5 class="m-0 fw-bold">Web Dev Course - Telhai</h5>
+                            <input type="radio" class="btn-check" name="rating" id="rate2" value="2">
+                            <label class="btn btn-outline-info btn-sm" for="rate2">2</label>
+
+                            <input type="radio" class="btn-check" name="rating" id="rate3" value="3">
+                            <label class="btn btn-outline-info btn-sm" for="rate3">3</label>
+
+                            <input type="radio" class="btn-check" name="rating" id="rate4" value="4">
+                            <label class="btn btn-outline-info btn-sm" for="rate4">4</label>
+
+                            <input type="radio" class="btn-check" name="rating" id="rate5" value="5">
+                            <label class="btn btn-outline-info btn-sm" for="rate5">5</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-1">
+                    <button type="submit" id="submitBtn" class="btn btn-success w-100">
+                        <i class="fas fa-plus"></i> Add
+                    </button>
+                </div>
+            </form>
         </div>
-
-        <div class="d-flex align-items-center gap-3">
-            <button class="btn btn-light btn-sm" onclick="loadPage('bootstrap.html')">
-                <i class="fas fa-gear"></i> Settings
-            </button>
-            <button class="btn btn-danger btn-sm">
-                <i class="fas fa-right-from-bracket"></i> Logout
-            </button>
-        </div>
-    </header>
-
-    <!-- BODY WRAPPER -->
-    <div class="d-flex flex-fill">
-
-        <!-- SIDEBAR MENU -->
-        <nav id="sidebar" class="sidebar p-3">
-            <h6 class="fw-bold text-uppercase text-muted">Navigation</h6>
-            <ul class="nav flex-column">
-
-                <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="loadPage('/03_Layout/bootstrap.html')">
-                        <i class="fas fa-gauge"></i> Bootstrap
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="loadPage('/02_Styling/index.html')">
-                        <i class="fas fa-gauge"></i> css
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="loadPage('/04_HtmlElements/index.html')">
-                        <i class="fas fa-gauge"></i> calculator
-                    </a>
-                </li>
-
-
-
-
-
-
-            </ul>
-        </nav>
-
-        <!-- MAIN CONTENT -->
-        <main class="main-area flex-fill">
-            <iframe id="contentFrame" src="/03_Layout/bootstrap.html"></iframe>
-        </main>
     </div>
 
-    <!-- FOOTER -->
-    <footer class="text-center text-muted small shadow-sm">
-        © 2025 Telhai WebDev Course • Dstar
-    </footer>
+    <!-- Search, sort and view toggle -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+        <input type="text" id="search" class="form-control flex-grow-1 me-2" placeholder="Search by title...">
 
+        <!-- Sort radio buttons -->
+        <div class="d-flex align-items-center me-2">
+            <span class="me-2">Sort</span>
+            <div class="btn-group" role="group" aria-label="Sort">
+                <input type="radio" class="btn-check" name="sortOption" id="sortNewest" value="newest" checked>
+                <label class="btn btn-outline-light btn-sm" for="sortNewest">
+                    <i class="fas fa-clock"></i>
+                </label>
 
-    <!-- JS -->
-    <script src="script.js"></script>
+                <input type="radio" class="btn-check" name="sortOption" id="sortName" value="name">
+                <label class="btn btn-outline-light btn-sm" for="sortName">
+                    <i class="fas fa-font"></i>
+                </label>
 
+                <input type="radio" class="btn-check" name="sortOption" id="sortRating" value="rating">
+                <label class="btn btn-outline-light btn-sm" for="sortRating">
+                    <i class="fas fa-star"></i>
+                </label>
+            </div>
+        </div>
 
+        <!-- View toggle table/cards -->
+        <button id="viewToggleBtn" class="btn btn-outline-info" title="Toggle view">
+            <i class="fas fa-table"></i>
+        </button>
+    </div>
 
+    <!-- Table view -->
+    <table class="table table-hover" id="tableView">
+        <thead>
+        <tr>
+            <th>Thumbnail</th>
+            <th>Title</th>
+            <th>Rating</th>
+            <th class="text-end">Actions</th>
+        </tr>
+        </thead>
+        <tbody id="songList"></tbody>
+    </table>
+
+    <!-- Cards view -->
+    <div id="cardView" class="row g-3 d-none"></div>
+</div>
+
+<script src="index.js"></script>
 </body>
-
 </html>
