@@ -18,18 +18,24 @@ let currentView = 'table';  // table, cards
 function extractYouTubeId(url) {
     try {
         const u = new URL(url);
+
+        // youtu.be/VIDEOID
         if (u.hostname.includes('youtu.be')) {
             return u.pathname.slice(1);
         }
+
+        // youtube.com/watch?v=VIDEOID
         if (u.searchParams.get('v')) {
             return u.searchParams.get('v');
         }
+
+        // youtube.com/embed/VIDEOID
         if (u.pathname.startsWith('/embed/')) {
             const parts = u.pathname.split('/');
             return parts[2] || null;
         }
     } catch (e) {
-        // not a valid url
+        // invalid url, ignore
     }
     return null;
 }
@@ -63,7 +69,7 @@ function saveToStorage() {
 }
 
 function getVisibleSongs() {
-    // filter
+    // filter by search
     let filtered = songs.filter(song =>
         song.title.toLowerCase().includes(currentSearch.toLowerCase())
     );
@@ -124,7 +130,6 @@ function renderSongs() {
     if (currentView === 'table') {
         data.forEach(song => {
             const thumbnail = getThumbnailUrl(song);
-            const videoId = song.videoId || extractYouTubeId(song.url);
 
             const row = document.createElement('tr');
 
@@ -156,13 +161,12 @@ function renderSongs() {
         // cards view
         data.forEach(song => {
             const thumbnail = getThumbnailUrl(song);
-            const videoId = song.videoId || extractYouTubeId(song.url);
 
             const col = document.createElement('div');
             col.className = 'col-12 col-sm-6 col-md-4 col-lg-3';
 
             col.innerHTML = `
-                <div class="card h-100 bg-dark border-secondary">
+                <div class="card custom-card-bg h-100">
                     ${thumbnail
                         ? `<img src="${thumbnail}" class="card-img-top" alt="${song.title}">`
                         : ''
@@ -249,7 +253,9 @@ function editSong(id) {
 
     // set rating radio
     if (songToEdit.rating) {
-        const radio = document.querySelector('input[name="rating"][value="' + songToEdit.rating + '"]');
+        const radio = document.querySelector(
+            'input[name="rating"][value="' + songToEdit.rating + '"]'
+        );
         if (radio) radio.checked = true;
     }
 
@@ -268,7 +274,7 @@ function updateSong(id, title, url, rating, videoId) {
     songs[index].videoId = videoId;
 }
 
-// small wrapper because we use onclick in HTML strings
+// wrapper for onclick
 function playSong(id) {
     const song = songs.find(s => s.id === id);
     if (!song) return;
@@ -307,7 +313,7 @@ viewToggleBtn.addEventListener('click', () => {
 
 // init on page load
 document.addEventListener('DOMContentLoaded', () => {
-    // make sure older songs without rating or videoId still work
+    // handle old entries that may not have rating, videoId or dateAdded
     songs = songs.map(song => ({
         ...song,
         rating: song.rating || null,

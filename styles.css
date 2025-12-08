@@ -1,0 +1,28 @@
+/* optional, just to be safe on background */
+body {
+    background-color: #121212;
+}
+
+/* card view should match cyborg table row style */
+.card.custom-card-bg {
+    background-color: #2b2f32;
+    color: #f8f9fa;
+    border: 1px solid #3a3f44;
+}
+
+.card.custom-card-bg .card-title,
+.card.custom-card-bg .card-text {
+    color: #f8f9fa;
+}
+
+/* hover effect similar to table-hover */
+.card.custom-card-bg:hover {
+    background-color: #323539;
+    transition: background-color 0.15s ease-in-out;
+}
+
+/* nicer thumbnails */
+.card-img-top {
+    object-fit: cover;
+    max-height: 180px;
+}
