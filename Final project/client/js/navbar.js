@@ -1,21 +1,20 @@
 // client/js/navbar.js
 
-// --- 1. IMMEDIATE SECURITY CHECK ---
-// Runs instantly to redirect guests away from protected pages.
+// --- 1. IMMEDIATE SECURITY & REDIRECT CHECK ---
 (function() {
-    // Define which pages require login
-    const protectedPages = ['search.html', 'playlists.html'];
-    
-    // Get current filename (e.g., "search.html")
     const currentPage = window.location.pathname.split("/").pop();
-    
-    // Check if user is logged in
     const currentUser = sessionStorage.getItem('currentUser');
-
-    // If on a protected page AND not logged in -> KICK OUT
+    
+    // A. Protected Pages: Guest -> Login
+    const protectedPages = ['search.html', 'playlists.html'];
     if (protectedPages.includes(currentPage) && !currentUser) {
-        // use replace() so they can't click "Back" to return here
         window.location.replace('login.html'); 
+    }
+
+    // B. Guest Pages: Logged In User -> Home
+    const guestPages = ['login.html', 'register.html'];
+    if (guestPages.includes(currentPage) && currentUser) {
+        window.location.replace('index.html');
     }
 })();
 
@@ -23,21 +22,21 @@
 document.addEventListener("DOMContentLoaded", () => {
     const navbarContainer = document.getElementById("main-navbar");
     if (navbarContainer) {
-        // Check login status again for UI rendering
         const currentUser = sessionStorage.getItem('currentUser');
         const isLoggedIn = !!currentUser;
 
-        // Conditional Links: Only show Search/Playlists if logged in
+        // Conditional Links
+        // ADDED 'text-nowrap' to the classes below
         const linksHtml = `
             <li class="nav-item">
-                <a class="nav-link" href="index.html">Home</a>
+                <a class="nav-link text-nowrap" href="index.html">Home</a>
             </li>
             ${isLoggedIn ? `
             <li class="nav-item">
-                <a class="nav-link" href="search.html">Search</a>
+                <a class="nav-link text-nowrap" href="search.html">Search</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="playlists.html">My Playlists</a>
+                <a class="nav-link text-nowrap" href="playlists.html">My Playlists</a>
             </li>
             ` : ''}
         `;
@@ -53,14 +52,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto align-items-center">
+                    <ul class="navbar-nav ms-auto align-items-lg-center">
                         ${linksHtml}
-                        <li class="nav-item ms-lg-2 my-2 my-lg-0">
-                            <button id="theme-toggle" class="btn btn-outline-light btn-sm rounded-circle p-2">
-                                <i id="theme-icon" class="bi bi-moon-fill"></i>
-                            </button>
-                        </li>
-                        <li class="nav-item ms-lg-3" id="auth-section"></li>
+                        <li class="nav-item ms-lg-3 w-100 w-lg-auto" id="auth-section"></li>
                     </ul>
                 </div>
             </div>
@@ -68,32 +62,16 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
 
         initTheme();
-        renderAuthSection(); // Updated function name for clarity
+        renderAuthSection();
         highlightActiveLink();
+        updateHomeCTA();
     }
 });
 
 // --- Helper Functions ---
 
 function initTheme() {
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    const themeIcon = document.getElementById('theme-icon');
-    const htmlElement = document.documentElement;
-    let currentTheme = localStorage.getItem('theme') || 'light';
-    
-    const applyTheme = (theme) => {
-        htmlElement.setAttribute('data-bs-theme', theme);
-        if (themeIcon) themeIcon.className = theme === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
-    };
-    applyTheme(currentTheme);
-
-    if (themeToggleBtn) {
-        themeToggleBtn.addEventListener('click', () => {
-            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-            applyTheme(currentTheme);
-            localStorage.setItem('theme', currentTheme);
-        });
-    }
+    document.documentElement.setAttribute('data-bs-theme', 'dark');
 }
 
 function renderAuthSection() {
@@ -102,19 +80,43 @@ function renderAuthSection() {
 
     if (currentUserJSON) {
         const user = JSON.parse(currentUserJSON);
+        
+        // --- LAYOUT ---
+        // 1. Profile Picture: REMOVED completely.
+        // 2. Name: d-none d-lg-block (Hidden on mobile, Visible on Desktop).
+        // 3. Logout Button: w-100 (Full width on mobile), w-lg-auto (Normal on Desktop).
         authSection.innerHTML = `
-            <div class="d-flex align-items-center gap-2">
-                <img src="${user.imgUrl}" class="rounded-circle border border-2 border-light" style="width: 35px; height: 35px; object-fit: cover;">
+            <div class="d-lg-flex align-items-center gap-3 text-center">
+                
                 <span class="text-white fw-bold d-none d-lg-block">${user.firstName}</span>
-                <button onclick="logout()" class="btn btn-sm btn-outline-light ms-2">Logout</button>
+                
+                <button onclick="logout()" 
+                        class="btn btn-sm fw-bold shadow-sm w-100 w-lg-auto mt-3 mt-lg-0" 
+                        style="background-color: var(--color-bright); color: var(--color-deepest); border: none;">
+                    Logout
+                </button>
             </div>
         `;
     } else {
         authSection.innerHTML = `
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 mt-3 mt-lg-0 justify-content-center">
                 <a class="btn btn-custom btn-sm px-3" href="login.html">Login</a>
                 <a class="btn btn-outline-custom btn-sm px-3" href="register.html">Register</a>
             </div>
+        `;
+    }
+}
+
+function updateHomeCTA() {
+    const ctaContainer = document.getElementById('home-cta-container');
+    const currentUser = sessionStorage.getItem('currentUser');
+
+    if (ctaContainer && currentUser) {
+        ctaContainer.innerHTML = `
+            <p class="mb-3 fw-bold">Ready to listen?</p>
+            <a href="search.html" class="btn btn-custom btn-lg px-5 shadow">
+                <i class="bi bi-search me-2"></i> Start Searching
+            </a>
         `;
     }
 }
@@ -132,7 +134,7 @@ function highlightActiveLink() {
         const href = link.getAttribute('href');
         if (href === currentPage || (currentPage === '' && href === 'index.html')) {
             link.classList.add('active', 'fw-bold');
-            link.style.borderBottom = "2px solid var(--text-primary)";
+            link.style.borderBottom = "2px solid var(--text-highlight)";
         }
     });
 }

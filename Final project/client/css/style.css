@@ -1,57 +1,194 @@
-:root {
-    /* --- Palette: Navy / Blue / Beige / Cream --- */
-    --color-navy: #213555;
-    --color-slate: #3E5879;
-    --color-beige: #D8C4B6;
-    --color-cream: #F5EFE7;
+/* =========================================
+   THEME: MIDNIGHT NEON (Cyberpunk/Synthwave)
+   FONTS: Outfit (Headings) + Inter (Body)
+   ========================================= */
 
-    /* --- Light Mode Variables --- */
-    --body-bg-gradient: linear-gradient(135deg, var(--color-cream) 0%, var(--color-beige) 100%);
-    --card-bg: #ffffff;
-    --text-primary: var(--color-navy);
-    --text-secondary: var(--color-slate);
-    --btn-primary-bg: var(--color-navy);
+   :root {
+    /* --- Palette --- */
+    --color-void: #0f0c29;      /* Deepest background */
+    --color-midnight: #302b63;  /* Gradient mid-tone */
+    --color-slate: #24243e;     /* Card background */
+    --color-electric: #8E2DE2;  /* Primary Purple */
+    --color-neon: #00F260;      /* Accent Green/Cyan */
+    --color-shock: #4A00E0;     /* Secondary Gradient Purple */
+
+    /* --- Theme Variables --- */
+    /* Background: Deep Void to Midnight Gradient */
+    --body-bg-gradient: linear-gradient(135deg, var(--color-void) 0%, var(--color-midnight) 100%);
+    
+    /* Cards: Glassmorphism effect (Semi-transparent with Blur) */
+    --card-bg: rgba(48, 43, 99, 0.6); 
+    --card-border: 1px solid rgba(142, 45, 226, 0.3);
+    
+    /* Text */
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-highlight: var(--color-neon);
+
+    /* Buttons */
+    --btn-primary-bg: linear-gradient(90deg, var(--color-electric), var(--color-shock));
     --btn-primary-text: #ffffff;
-    --nav-bg: rgba(62, 88, 121, 0.95);
+    --btn-hover-shadow: 0 0 20px rgba(142, 45, 226, 0.6);
+
+    /* Navigation */
+    --nav-bg: rgba(15, 12, 41, 0.9); /* Deep Void with opacity */
+    --nav-border: 1px solid rgba(142, 45, 226, 0.2);
     --nav-text: #ffffff;
 }
 
+/* Force Dark Mode defaults */
 [data-bs-theme="dark"] {
-    /* --- Dark Mode Variables --- */
-    --body-bg-gradient: linear-gradient(135deg, var(--color-navy) 0%, #1a2b45 100%);
-    --card-bg: var(--color-slate);
-    --text-primary: var(--color-cream);
-    --text-secondary: var(--color-beige);
-    --btn-primary-bg: var(--color-beige);
-    --btn-primary-text: var(--color-navy);
-    --nav-bg: rgba(33, 53, 85, 0.95);
-    --nav-text: var(--color-cream);
+    color-scheme: dark;
 }
 
-/* General Layout */
+/* =========================================
+   GENERAL LAYOUT & TYPOGRAPHY
+   ========================================= */
+
 body {
     background: var(--body-bg-gradient);
     min-height: 100vh;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Main UI Font: Inter (Clean, Legible) */
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
     display: flex;
     flex-direction: column;
     background-attachment: fixed;
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased; /* Crisper text on dark mode */
 }
 
-/* Navbar Customization */
+/* Display Font: Outfit (Geometric, Tech-vibe) */
+h1, h2, h3, h4, h5, h6, .navbar-brand, .btn-custom, .student-name, .fw-bold {
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -0.02em;
+}
+
+/* =========================================
+   NAVBAR
+   ========================================= */
+
 nav.navbar {
     background-color: var(--nav-bg) !important;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-bottom: var(--nav-border);
+    backdrop-filter: blur(10px); /* Frosted glass effect */
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
 }
-nav.navbar .navbar-brand, nav.navbar .nav-link {
-    color: var(--nav-text) !important;
-}
-nav.navbar .nav-link:hover { opacity: 0.8; }
-.navbar-toggler { border-color: rgba(255,255,255,0.5); }
-.navbar-toggler-icon { filter: invert(1); }
 
-/* Card & Profile Styling */
+nav.navbar .navbar-brand {
+    background: linear-gradient(to right, var(--color-neon), #05FFA1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 1.5rem;
+}
+
+nav.navbar .nav-link {
+    color: var(--nav-text) !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+nav.navbar .nav-link:hover, nav.navbar .nav-link.active {
+    color: var(--color-neon) !important;
+    text-shadow: 0 0 8px rgba(0, 242, 96, 0.5);
+}
+
+/* =========================================
+   CUSTOM HAMBURGER ANIMATION (Midnight Neon)
+   ========================================= */
+
+/* 1. Remove default Bootstrap border/focus */
+.navbar-toggler {
+    border: none;
+    padding: 0;
+    width: 30px;
+    height: 24px;
+    position: relative;
+    transition: all 0.3s ease-in-out;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* 2. The Lines (Spans) */
+.navbar-toggler-icon {
+    background-image: none !important; /* Kill default SVG */
+    background-color: var(--color-neon);
+    height: 3px;
+    width: 100%;
+    border-radius: 10px;
+    position: absolute;
+    left: 0;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 0 10px var(--color-neon); /* Neon Glow */
+}
+
+/* Positioning the 3 lines manually */
+/* Top Line */
+.navbar-toggler-icon::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: var(--color-neon);
+    border-radius: 10px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 0 10px var(--color-neon);
+}
+
+/* Bottom Line */
+.navbar-toggler-icon::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: var(--color-neon);
+    border-radius: 10px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 0 10px var(--color-neon);
+}
+
+/* 3. The 'X' Animation (When Menu is OPEN) */
+/* Bootstrap adds 'aria-expanded="true"' when open. We use that hook. */
+
+/* Middle line disappears */
+.navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
+    background-color: transparent;
+    box-shadow: none;
+}
+
+/* Top line rotates 45deg and moves to center */
+.navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::before {
+    top: 0;
+    transform: rotate(45deg);
+    background-color: #fff; /* Turn white for contrast on open */
+    box-shadow: 0 0 15px var(--color-electric); /* Purple glow on open */
+}
+
+/* Bottom line rotates -45deg and moves to center */
+.navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::after {
+    top: 0;
+    transform: rotate(-45deg);
+    background-color: #fff;
+    box-shadow: 0 0 15px var(--color-electric);
+}
+
+/* 4. Hover State */
+.navbar-toggler:hover .navbar-toggler-icon,
+.navbar-toggler:hover .navbar-toggler-icon::before,
+.navbar-toggler:hover .navbar-toggler-icon::after {
+    background-color: #fff;
+}
+
+/* =========================================
+   CARDS & PROFILE
+   ========================================= */
+
 .hero-section {
     flex: 1;
     display: flex;
@@ -64,94 +201,210 @@ nav.navbar .nav-link:hover { opacity: 0.8; }
     width: 100%;
     max-width: 450px;
     background-color: var(--card-bg);
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    border: var(--card-border);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
     overflow: hidden;
     text-align: center;
-    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .card-header-image {
     height: 250px;
-    background-image: url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=2070&auto=format&fit=crop');
+    /* High-energy concert / neon lights image */
+    background-image: url('https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=2070&auto=format&fit=crop');
     background-size: cover;
     background-position: center;
+    position: relative;
+}
+
+/* Purple overlay to blend image into background */
+.card-header-image::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(to bottom, transparent 0%, var(--color-void) 100%);
+    opacity: 0.9;
 }
 
 .profile-img-container {
     width: 140px;
     height: 140px;
     margin: -70px auto 0;
+    position: relative;
     border-radius: 50%;
-    border: 5px solid var(--card-bg);
-    background-color: var(--color-beige);
+    border: 4px solid var(--color-electric);
+    background-color: var(--color-void);
     overflow: hidden;
+    box-shadow: 0 0 20px rgba(142, 45, 226, 0.5); /* Glowing border */
 }
 .profile-img-container img { width: 100%; height: 100%; object-fit: cover; }
 
-/* Typography */
 .student-name {
     color: var(--text-primary);
     font-size: 1.75rem;
     font-weight: 700;
     margin-top: 15px;
+    letter-spacing: 0.5px;
 }
 .description { color: var(--text-secondary); font-size: 0.9rem; padding: 0 20px; margin-bottom: 30px; }
 
-/* Buttons */
+/* =========================================
+   BUTTONS
+   ========================================= */
+
 .btn-custom {
-    background-color: var(--btn-primary-bg);
+    background: var(--btn-primary-bg);
     color: var(--btn-primary-text);
     border-radius: 50px;
-    padding: 10px 30px;
-    font-weight: 600;
+    padding: 12px 35px;
+    font-weight: 700;
     border: none;
-    transition: transform 0.2s;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.9rem;
 }
-.btn-custom:hover { transform: translateY(-2px); opacity: 0.9; color: var(--btn-primary-text); }
+
+.btn-custom:hover { 
+    transform: translateY(-2px); 
+    box-shadow: var(--btn-hover-shadow);
+    color: #fff;
+}
 
 .btn-outline-custom {
     background-color: transparent;
     color: var(--text-primary);
-    border: 2px solid var(--text-secondary);
+    border: 2px solid var(--color-neon);
     border-radius: 50px;
-    padding: 8px 25px;
+    padding: 10px 30px;
     font-weight: 600;
-}
-.btn-outline-custom:hover {
-    background-color: var(--text-primary);
-    color: var(--card-bg);
-    border-color: var(--text-primary);
+    transition: all 0.3s ease;
 }
 
-/* Playlist Page Specifics */
+.btn-outline-custom:hover {
+    background-color: var(--color-neon);
+    color: var(--color-void);
+    box-shadow: 0 0 15px rgba(0, 242, 96, 0.5);
+    border-color: var(--color-neon);
+}
+
+/* =========================================
+   INPUTS & FORMS
+   ========================================= */
+
+.form-control, .form-select {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    border-radius: 10px;
+    padding: 12px 15px;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--color-electric);
+    box-shadow: 0 0 0 0.25rem rgba(142, 45, 226, 0.25);
+    color: white;
+}
+
+.form-control::placeholder { color: rgba(255, 255, 255, 0.3); }
+
+/* =========================================
+   PLAYLISTS & SONGS
+   ========================================= */
+
 .sidebar-container {
     background-color: var(--card-bg);
-    border-radius: 10px;
+    backdrop-filter: blur(12px);
+    border-radius: 15px;
     height: 100%;
     min-height: 80vh;
+    border: var(--card-border);
 }
+
 .active-playlist {
-    background-color: var(--btn-primary-bg) !important;
-    color: var(--btn-primary-text) !important;
-    border-color: var(--btn-primary-bg) !important;
+    background: linear-gradient(90deg, var(--color-electric), var(--color-shock)) !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
+
+.list-group-item {
+    border-color: rgba(255,255,255,0.05);
+    margin-bottom: 5px;
+    border-radius: 8px !important;
+    background: transparent;
+    color: var(--text-secondary);
+}
+
+.list-group-item:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: var(--text-primary);
+}
+
 .song-card-horizontal {
-    transition: transform 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     background: var(--card-bg);
     color: var(--text-primary);
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
 }
-.song-card-horizontal:hover { transform: translateX(5px); }
-.rating-stars i { cursor: pointer; transition: transform 0.2s; }
-.rating-stars i:hover { transform: scale(1.2); }
 
-/* Utilities */
+.song-card-horizontal:hover { 
+    transform: translateY(-3px) scale(1.01);
+    border-color: var(--color-electric);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.rating-stars i { 
+    cursor: pointer; 
+    transition: transform 0.2s; 
+    color: var(--color-neon); 
+}
+.rating-stars i:hover { 
+    transform: scale(1.3); 
+    text-shadow: 0 0 10px var(--color-neon); 
+}
+
+/* =========================================
+   MODALS & UTILITIES
+   ========================================= */
+
+.modal-content {
+    background-color: #1a1a2e; /* Solid dark color for readability */
+    color: white;
+    border: 1px solid var(--color-electric);
+    box-shadow: 0 0 50px rgba(0,0,0,0.7);
+}
+
+.btn-close { filter: invert(1); }
+
 .text-truncate-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
-footer { color: var(--text-primary); opacity: 0.7; }
+
+a { color: var(--color-neon); text-decoration: none; transition: 0.2s; }
+a:hover { color: #fff; text-shadow: 0 0 5px var(--color-neon); }
+
+footer { color: var(--text-secondary); opacity: 0.6; }
+
+/* Custom Scrollbar for Chrome/Safari/Edge */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--color-void); 
+}
+::-webkit-scrollbar-thumb {
+    background: var(--color-midnight); 
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-electric); 
+}

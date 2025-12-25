@@ -108,10 +108,17 @@ window.openPlayer = function(videoId) {
 };
 
 window.openAddModal = function(videoId) {
+    // 1. RE-FETCH: Reload user from storage to catch playlists created in other tabs
+    const userJson = sessionStorage.getItem('currentUser');
+    if (userJson) {
+        currentUser = JSON.parse(userJson);
+    }
+
     selectedVideo = currentSearchResults.find(v => v.id === videoId);
     const select = document.getElementById('existingPlaylistSelect');
     select.innerHTML = '<option value="">Select a playlist...</option>';
     
+    // 2. Populate with fresh data
     if (currentUser.playlists) {
         currentUser.playlists.forEach(pl => {
             const opt = document.createElement('option');
@@ -149,6 +156,15 @@ async function saveToPlaylist() {
             sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
             
             bootstrap.Modal.getInstance(document.getElementById('addToPlaylistModal')).hide();
+            
+            // 3. TOAST UPDATE: Inject link to playlist
+            const toastBody = document.querySelector('#successToast .toast-body');
+            toastBody.innerHTML = `
+                <i class="bi bi-check-circle-fill me-2"></i> 
+                Added to <strong>${targetName}</strong>! 
+                <a href="playlists.html?id=${encodeURIComponent(targetName)}" class="text-white fw-bold text-decoration-underline ms-2">View Playlist</a>
+            `;
+
             new bootstrap.Toast(document.getElementById('successToast')).show();
             renderResults(currentSearchResults);
         } catch (error) {
