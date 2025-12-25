@@ -44,7 +44,12 @@
                                 <button class="btn btn-outline-custom" id="uploadMp3Btn" style="display: none;">
                                     <i class="bi bi-upload me-2"></i> Upload MP3
                                 </button>
-                                <button class="btn btn-outline-danger" id="delete-playlist-btn" style="display: none;">
+                                
+                                <button class="btn btn-outline-warning" id="rename-playlist-btn" style="display: none;" title="Rename">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+
+                                <button class="btn btn-outline-danger" id="delete-playlist-btn" style="display: none;" title="Delete">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </div>
@@ -128,6 +133,23 @@
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn btn-custom btn-sm" onclick="createNewPlaylist()">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="renamePlaylistModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title">Rename Playlist</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="renameInput" class="form-control" placeholder="New Name">
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-custom btn-sm" onclick="saveRenamePlaylist()">Save</button>
                 </div>
             </div>
         </div>

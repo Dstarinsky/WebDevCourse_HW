@@ -31,14 +31,19 @@ document.addEventListener('DOMContentLoaded', () => {
         renderSongs(e.target.value);
     });
 
-    // Sort Change Listener
     document.getElementById('sortSelect').addEventListener('change', () => {
-        renderSongs(document.getElementById('filterInput').value); // Re-render with current filter
+        renderSongs(document.getElementById('filterInput').value); 
     });
 
     document.getElementById('delete-playlist-btn').addEventListener('click', deleteCurrentPlaylist);
     document.getElementById('uploadMp3Btn').addEventListener('click', uploadMp3);
     document.getElementById('playAllBtn').addEventListener('click', playAll);
+
+    // NEW: Rename Button Listener
+    document.getElementById('rename-playlist-btn').addEventListener('click', () => {
+        document.getElementById('renameInput').value = currentPlaylistName;
+        new bootstrap.Modal(document.getElementById('renamePlaylistModal')).show();
+    });
 
     // --- PLAYER CONTROLS LISTENERS ---
     document.getElementById('videoNextBtn').addEventListener('click', playNext);
@@ -75,7 +80,6 @@ window.onYouTubeIframeAPIReady = function() {
 };
 
 function onPlayerStateChange(event) {
-    // YT.PlayerState.ENDED is 0
     if (event.data === 0) {
         playNext();
     }
@@ -127,6 +131,29 @@ window.createNewPlaylist = async function() {
     loadPlaylist(name);
 };
 
+// NEW: Rename Functionality
+window.saveRenamePlaylist = async function() {
+    const newName = document.getElementById('renameInput').value.trim();
+    if (!newName) return alert("Name cannot be empty");
+    if (newName === currentPlaylistName) return; // No change
+    
+    // Check for duplicate names
+    if (currentUser.playlists.find(p => p.name === newName)) {
+        return alert("Playlist with this name already exists");
+    }
+
+    // Find and update
+    const playlist = currentUser.playlists.find(p => p.name === currentPlaylistName);
+    playlist.name = newName;
+    
+    await syncPlaylists();
+    
+    bootstrap.Modal.getInstance(document.getElementById('renamePlaylistModal')).hide();
+    
+    // Update global state and reload UI
+    loadPlaylist(newName); 
+};
+
 function loadPlaylist(name) {
     currentPlaylistName = name;
     renderSidebar();
@@ -137,7 +164,9 @@ function loadPlaylist(name) {
     document.getElementById('playlistTitle').textContent = playlist.name;
     document.getElementById('playlistCount').textContent = `${playlist.songs.length} songs`;
     
+    // Show buttons
     document.getElementById('delete-playlist-btn').style.display = 'inline-block';
+    document.getElementById('rename-playlist-btn').style.display = 'inline-block'; // Show rename
     document.getElementById('uploadMp3Btn').style.display = 'inline-block';
     document.getElementById('playAllBtn').style.display = playlist.songs.length > 0 ? 'inline-block' : 'none';
 
@@ -150,13 +179,11 @@ function renderSongs(filterText = '') {
 
     let songs = [...playlist.songs];
 
-    // 1. Filter
     if (filterText) {
         const lower = filterText.toLowerCase();
         songs = songs.filter(s => s.snippet.title.toLowerCase().includes(lower));
     }
 
-    // 2. Sort Logic
     const sortMode = document.getElementById('sortSelect').value;
     if (sortMode === 'name') {
         songs.sort((a, b) => a.snippet.title.localeCompare(b.snippet.title));
@@ -179,7 +206,8 @@ function renderSongs(filterText = '') {
         const col = document.createElement('div');
         col.className = 'col-12';
         
-        const imgUrl = song.snippet.thumbnails ? song.snippet.thumbnails.medium.url : 'https://cdn-icons-png.flaticon.com/512/9387/9387063.png';
+        // Smart URL Fix for MP3s in list view
+        let imgUrl = song.snippet.thumbnails ? song.snippet.thumbnails.medium.url : 'https://cdn-icons-png.flaticon.com/512/9387/9387063.png';
 
         col.innerHTML = `
             <div class="card song-card-horizontal p-2 h-100 shadow-sm">
@@ -216,18 +244,13 @@ function renderSongs(filterText = '') {
 
 function playAll() {
     if (!displayedSongs || displayedSongs.length === 0) return alert("No songs to play.");
-    
-    // Set up queue based on current filtered/sorted list
     playQueue = displayedSongs;
     queueIndex = 0;
-    
     playCurrentQueueSong();
 }
 
-// Sets up the queue starting from the clicked song
 window.playSingle = function(id) {
     if (!displayedSongs || displayedSongs.length === 0) return;
-
     const index = displayedSongs.findIndex(s => (s.isMp3 ? s.id : (s.id.videoId || s.id)) === id);
     if (index !== -1) {
         playQueue = displayedSongs;
@@ -248,8 +271,6 @@ function playNext() {
 function playPrevious() {
     queueIndex--;
     if (queueIndex < 0) {
-        // If at start, either stop or restart first song.
-        // Here we restart the first song for better UX
         queueIndex = 0; 
     }
     playCurrentQueueSong();
@@ -261,27 +282,27 @@ function playCurrentQueueSong() {
 }
 
 function playMedia(song) {
-    // Pause any currently playing media without resetting queue
     stopPlayers(false); 
 
     if (song.isMp3) {
         const audio = document.getElementById('audioPlayerControl');
         document.getElementById('audioTitle').textContent = song.snippet.title;
-        audio.src = song.fileUrl;
         
-        // Hide Video Modal if open
+        // Robust URL Fixer
+        let songUrl = song.fileUrl;
+        if (songUrl.startsWith('...')) songUrl = songUrl.substring(3);
+        if (songUrl.startsWith('/') && !songUrl.startsWith('http')) songUrl = `${CONFIG.SERVER_URL}${songUrl}`;
+        
+        audio.src = songUrl;
+        
         bootstrap.Modal.getInstance(document.getElementById('videoModal'))?.hide();
-        
         const modal = new bootstrap.Modal(document.getElementById('audioModal'));
         modal.show();
         audio.play().catch(e => console.log("Autoplay blocked:", e));
 
     } else {
         const videoId = song.id.videoId || song.id;
-        
-        // Hide Audio Modal if open
         bootstrap.Modal.getInstance(document.getElementById('audioModal'))?.hide();
-
         const modal = new bootstrap.Modal(document.getElementById('videoModal'));
         modal.show();
 
