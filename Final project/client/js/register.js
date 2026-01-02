@@ -1,9 +1,4 @@
-async function hashPassword(plainText) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(plainText);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
+// client/js/register.js
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('registerForm');
@@ -25,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!firstName || !username || !password || !confirmPassword) return alert("All fields are required.");
         
-        // Password Complexity Regex
         const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$/;
         if (!passwordRegex.test(password)) {
             return alert("Password must be 6+ chars with 1 letter, 1 number, and 1 special char.");
@@ -33,13 +27,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (password !== confirmPassword) return alert("Passwords do not match.");
 
-        const hashedPassword = await hashPassword(password);
+        // REMOVED: const hashedPassword = await hashPassword(password);
 
         try {
-            const response = await fetch(`/api/register`, {
+            const response = await fetch(`${CONFIG.SERVER_URL}/api/register`, { // Use CONFIG.SERVER_URL
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password: hashedPassword, firstName, imgUrl })
+                // SEND RAW PASSWORD
+                body: JSON.stringify({ username, password: password, firstName, imgUrl }) 
             });
 
             if (response.ok) {

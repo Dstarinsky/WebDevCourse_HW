@@ -1,9 +1,4 @@
-async function hashPassword(plainText) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(plainText);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
+// client/js/login.js
 
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
@@ -18,13 +13,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!username || !password) return;
 
-        const hashedPassword = await hashPassword(password);
+        // REMOVED: const hashedPassword = await hashPassword(password);
 
         try {
-            const response = await fetch(`/api/login`, {
+            const response = await fetch(`${CONFIG.SERVER_URL}/api/login`, { // Use CONFIG.SERVER_URL
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password: hashedPassword })
+                // SEND RAW PASSWORD
+                body: JSON.stringify({ username, password: password }) 
             });
 
             const data = await response.json();

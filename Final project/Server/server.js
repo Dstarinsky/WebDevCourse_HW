@@ -1,4 +1,4 @@
-// 1. Load variables from .env immediately
+// server/server.js
 require('dotenv').config();
 
 const express = require('express');
@@ -7,28 +7,36 @@ const path = require('path');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const multer = require('multer');
+const https = require('https');
+const bcrypt = require('bcryptjs'); // <--- IMPORT BCRYPT
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-// 2. Get API Key from Environment
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 
-const DATA_FILE = path.join(__dirname, 'data', 'users.json');
+const DATA_DIR = path.join(__dirname, 'data');
+const DATA_FILE = path.join(DATA_DIR, 'users.json');
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
 
 // --- Middleware ---
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' })); 
 app.use(express.static(path.join(__dirname, '../client')));
-app.use('/uploads', express.static(UPLOADS_DIR));
+app.use('/uploads', express.static(UPLOADS_DIR)); 
 
-// --- Configure Multer (For MP3s) ---
+// --- Initialization ---
+if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
 if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR);
+
+// --- Configure Multer ---
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, UPLOADS_DIR),
-    filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
+    filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname.replace(/\s+/g, '_'))
 });
-const upload = multer({ storage: storage });
+const upload = multer({ 
+    storage: storage,
+    limits: { fileSize: 10 * 1024 * 1024 } 
+});
 
 // --- Helper Functions ---
 const readUsers = () => {
@@ -43,94 +51,71 @@ const writeUsers = (users) => {
     fs.writeFileSync(DATA_FILE, JSON.stringify(users, null, 2));
 };
 
-// --- 🌍 NEW: YOUTUBE PROXY ROUTES ---
+// --- Routes ---
 
-// Proxy 1: Search
-app.get('/api/youtube/search', async (req, res) => {
-    const query = req.query.q;
-    if (!query) return res.status(400).json({ error: "No query provided" });
-
-    try {
-        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=12&q=${encodeURIComponent(query)}&type=video&key=${YOUTUBE_API_KEY}`;
-        const response = await fetch(url);
-        const data = await response.json();
-        
-        if (!response.ok) return res.status(response.status).json(data);
-        res.json(data);
-    } catch (error) {
-        console.error("YouTube Proxy Error:", error);
-        res.status(500).json({ error: "Server failed to fetch from YouTube" });
-    }
-});
-
-// Proxy 2: Video Details
-app.get('/api/youtube/videos', async (req, res) => {
-    const videoIds = req.query.id;
-    if (!videoIds) return res.status(400).json({ error: "No video IDs provided" });
-
-    try {
-        const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${videoIds}&key=${YOUTUBE_API_KEY}`;
-        const response = await fetch(url);
-        const data = await response.json();
-        
-        if (!response.ok) return res.status(response.status).json(data);
-        res.json(data);
-    } catch (error) {
-        res.status(500).json({ error: "Server failed to fetch video details" });
-    }
-});
-
-// --- AUTH ROUTES ---
-// admin login page
-app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, '../adminLogin.html'));
-});
-
-// Register (Expects HASHED password)
-app.post('/api/register', (req, res) => {
+// 1. REGISTER (SECURE)
+app.post('/api/register', async (req, res) => {
     const { username, password, firstName, imgUrl } = req.body;
     const users = readUsers();
 
     if (users.find(u => u.username === username)) {
-        return res.status(400).json({ error: "Username already exists" });
+        return res.status(400).json({ error: "Username already taken" });
     }
 
-    // Store the hash exactly as sent by the client
-    const newUser = { username, password, firstName, imgUrl, playlists: [] };
+    // --- BCRYPT HASHING HERE ---
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    // ---------------------------
+
+    const newUser = { 
+        username, 
+        password: hashedPassword, // Save the Bcrypt Hash, not plain text
+        firstName, 
+        imgUrl, 
+        playlists: [] 
+    };
+    
     users.push(newUser);
     writeUsers(users);
-
-    res.json({ success: true });
+    res.status(201).json({ success: true });
 });
 
-// Login (Compares HASHED password)
-app.post('/api/login', (req, res) => {
+// 2. LOGIN (SECURE)
+app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
     const users = readUsers();
-    
-    // Compare the incoming hash with the stored hash
-    const user = users.find(u => u.username === username && u.password === password);
+    const user = users.find(u => u.username === username);
 
-    if (user) {
-        const { password, ...userData } = user; // Exclude hash from response
-        res.json({ success: true, user: userData });
+    if (!user) {
+        return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    // --- BCRYPT COMPARISON HERE ---
+    // Compare the raw password sent from client with the hash in DB
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (isMatch) {
+        // Remove password from object before sending back
+        const { password, ...userWithoutPass } = user;
+        res.json({ success: true, user: userWithoutPass });
     } else {
         res.status(401).json({ error: "Invalid credentials" });
     }
 });
 
-// ... (Keep existing playlists/upload routes identical to previous steps) ...
-// Playlists GET
+// ... (Keep the rest of your routes: playlists, upload, youtube exactly as they are) ...
+// 3. GET PLAYLISTS
 app.get('/api/playlists/:username', (req, res) => {
     const user = readUsers().find(u => u.username === req.params.username);
     user ? res.json(user.playlists || []) : res.status(404).json({ error: "User not found" });
 });
 
-// Playlists POST
+// 4. SAVE PLAYLISTS
 app.post('/api/playlists', (req, res) => {
     const { username, playlists } = req.body;
     const users = readUsers();
     const idx = users.findIndex(u => u.username === username);
+    
     if (idx !== -1) {
         users[idx].playlists = playlists;
         writeUsers(users);
@@ -140,26 +125,42 @@ app.post('/api/playlists', (req, res) => {
     }
 });
 
-// Upload POST
+// 5. UPLOAD MP3
 app.post('/api/upload', upload.single('mp3file'), (req, res) => {
-    if (!req.file) return res.status(400).json({ error: "No file" });
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
     res.json({ 
         success: true, 
-        fileUrl: `.../uploads/${req.file.filename}`, 
+        fileUrl: `/uploads/${req.file.filename}`, 
         fileName: req.file.originalname 
     });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running`);
+// 6. YOUTUBE SEARCH
+app.get('/api/youtube/search', (req, res) => {
+    const query = req.query.q;
+    if (!query) return res.status(400).json({ error: "No query" });
+
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoCategoryId=10&maxResults=12&q=${encodeURIComponent(query)}&key=${YOUTUBE_API_KEY}`;
+    
+    https.get(url, (apiRes) => {
+        let data = '';
+        apiRes.on('data', chunk => data += chunk);
+        apiRes.on('end', () => res.json(JSON.parse(data)));
+    }).on('error', (e) => res.status(500).json({ error: e.message }));
 });
 
-app.get('/', (req, res) => {
-    const indexPath = path.join(__dirname, '../client/index.html');
-    res.sendFile(indexPath, (err) => {
-        if (err) {
-            console.error("Error sending index.html:", err);
-            res.status(500).send("Error loading homepage. Check server logs.");
-        }
-    });
+// 7. YOUTUBE VIDEO DETAILS
+app.get('/api/youtube/videos', (req, res) => {
+    const ids = req.query.id;
+    if (!ids) return res.status(400).json({ error: "No ids" });
+    const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${ids}&key=${YOUTUBE_API_KEY}`;
+    https.get(url, (apiRes) => {
+        let data = '';
+        apiRes.on('data', chunk => data += chunk);
+        apiRes.on('end', () => res.json(JSON.parse(data)));
+    }).on('error', (e) => res.status(500).json({ error: e.message }));
+});
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
