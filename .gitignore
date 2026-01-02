@@ -65,4 +65,7 @@ docker-compose.override.yml
 *.old
 *.orig
 
+config.js
 users.json
+uploads/
+data/
