@@ -2,20 +2,20 @@
 
 let currentUser = null;
 let currentPlaylistName = null;
-let displayedSongs = []; // Keeps track of the currently sorted/filtered list
+let displayedSongs = [];
 
 // --- Queue & Player State ---
 let playQueue = [];
 let queueIndex = 0;
-let ytPlayer = null; // YouTube Player Instance
+let ytPlayer = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Load User
+    // Load User
     const userJson = sessionStorage.getItem('currentUser');
     if (!userJson) { window.location.href = 'login.html'; return; }
     currentUser = JSON.parse(userJson);
 
-    // 2. Load YouTube API
+    // Load YouTube API
     loadYouTubeAPI();
 
     // 3. Initial Data Fetch
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (currentUser.playlists && currentUser.playlists.length > 0) loadPlaylist(currentUser.playlists[0].name);
     });
 
-    // 4. Event Listeners
+    // Event Listeners
     document.getElementById('filterInput').addEventListener('input', (e) => {
         renderSongs(e.target.value);
     });
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('uploadMp3Btn').addEventListener('click', uploadMp3);
     document.getElementById('playAllBtn').addEventListener('click', playAll);
 
-    // NEW: Rename Button Listener
+    // 
     document.getElementById('rename-playlist-btn').addEventListener('click', () => {
         document.getElementById('renameInput').value = currentPlaylistName;
         new bootstrap.Modal(document.getElementById('renamePlaylistModal')).show();
@@ -52,10 +52,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('videoPrevBtn').addEventListener('click', playPrevious);
     document.getElementById('audioPrevBtn').addEventListener('click', playPrevious);
 
-    // MP3 Ended Listener (for auto-next)
+    // MP3 Ended Listener
     document.getElementById('audioPlayerControl').addEventListener('ended', playNext);
 
-    // Modal Close Listeners (Stop playback when closing manually)
+    // Modal Close Listeners
     document.getElementById('videoModal').addEventListener('hidden.bs.modal', stopPlayers);
     document.getElementById('audioModal').addEventListener('hidden.bs.modal', stopPlayers);
 });
@@ -131,7 +131,7 @@ window.createNewPlaylist = async function() {
     loadPlaylist(name);
 };
 
-// NEW: Rename Functionality
+
 window.saveRenamePlaylist = async function() {
     const newName = document.getElementById('renameInput').value.trim();
     if (!newName) return alert("Name cannot be empty");
@@ -288,7 +288,7 @@ function playMedia(song) {
         const audio = document.getElementById('audioPlayerControl');
         document.getElementById('audioTitle').textContent = song.snippet.title;
         
-        // Robust URL Fixer
+        
         let songUrl = song.fileUrl;
         if (songUrl.startsWith('...')) songUrl = songUrl.substring(3);
         if (songUrl.startsWith('/') && !songUrl.startsWith('http')) songUrl = `${CONFIG.SERVER_URL}${songUrl}`;

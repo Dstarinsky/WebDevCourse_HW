@@ -93,7 +93,7 @@ function renderResults(videos) {
     });
 }
 
-// --- Player Logic (Reused Instance) ---
+// --- Player Logic ---
 let videoModalInstance = null;
 window.openPlayer = function(videoId) {
     const frame = document.getElementById('videoPlayerFrame');
@@ -108,7 +108,7 @@ window.openPlayer = function(videoId) {
 };
 
 window.openAddModal = function(videoId) {
-    // 1. RE-FETCH: Reload user from storage to catch playlists created in other tabs
+    //Reload user from storage to catch playlists created in other tabs
     const userJson = sessionStorage.getItem('currentUser');
     if (userJson) {
         currentUser = JSON.parse(userJson);
@@ -118,7 +118,7 @@ window.openAddModal = function(videoId) {
     const select = document.getElementById('existingPlaylistSelect');
     select.innerHTML = '<option value="">Select a playlist...</option>';
     
-    // 2. Populate with fresh data
+    // Populate with fresh data
     if (currentUser.playlists) {
         currentUser.playlists.forEach(pl => {
             const opt = document.createElement('option');

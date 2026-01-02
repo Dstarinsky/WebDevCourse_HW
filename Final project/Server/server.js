@@ -8,7 +8,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const https = require('https');
-const bcrypt = require('bcryptjs'); // <--- IMPORT BCRYPT
+const bcrypt = require('bcryptjs'); 
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -53,7 +53,7 @@ const writeUsers = (users) => {
 
 // --- Routes ---
 
-// 1. REGISTER (SECURE)
+// REGISTER (SECURE)
 app.post('/api/register', async (req, res) => {
     const { username, password, firstName, imgUrl } = req.body;
     const users = readUsers();
@@ -62,14 +62,12 @@ app.post('/api/register', async (req, res) => {
         return res.status(400).json({ error: "Username already taken" });
     }
 
-    // --- BCRYPT HASHING HERE ---
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    // ---------------------------
-
+   
     const newUser = { 
         username, 
-        password: hashedPassword, // Save the Bcrypt Hash, not plain text
+        password: hashedPassword, 
         firstName, 
         imgUrl, 
         playlists: [] 
@@ -80,7 +78,7 @@ app.post('/api/register', async (req, res) => {
     res.status(201).json({ success: true });
 });
 
-// 2. LOGIN (SECURE)
+// LOGIN 
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
     const users = readUsers();
@@ -90,12 +88,10 @@ app.post('/api/login', async (req, res) => {
         return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // --- BCRYPT COMPARISON HERE ---
     // Compare the raw password sent from client with the hash in DB
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (isMatch) {
-        // Remove password from object before sending back
         const { password, ...userWithoutPass } = user;
         res.json({ success: true, user: userWithoutPass });
     } else {
@@ -103,14 +99,13 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// ... (Keep the rest of your routes: playlists, upload, youtube exactly as they are) ...
-// 3. GET PLAYLISTS
+// GET PLAYLISTS
 app.get('/api/playlists/:username', (req, res) => {
     const user = readUsers().find(u => u.username === req.params.username);
     user ? res.json(user.playlists || []) : res.status(404).json({ error: "User not found" });
 });
 
-// 4. SAVE PLAYLISTS
+//  SAVE PLAYLISTS
 app.post('/api/playlists', (req, res) => {
     const { username, playlists } = req.body;
     const users = readUsers();
@@ -125,7 +120,7 @@ app.post('/api/playlists', (req, res) => {
     }
 });
 
-// 5. UPLOAD MP3
+//  UPLOAD MP3
 app.post('/api/upload', upload.single('mp3file'), (req, res) => {
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
     res.json({ 
@@ -135,7 +130,7 @@ app.post('/api/upload', upload.single('mp3file'), (req, res) => {
     });
 });
 
-// 6. YOUTUBE SEARCH
+// YOUTUBE SEARCH
 app.get('/api/youtube/search', (req, res) => {
     const query = req.query.q;
     if (!query) return res.status(400).json({ error: "No query" });
@@ -149,7 +144,7 @@ app.get('/api/youtube/search', (req, res) => {
     }).on('error', (e) => res.status(500).json({ error: e.message }));
 });
 
-// 7. YOUTUBE VIDEO DETAILS
+//  YOUTUBE VIDEO DETAILS
 app.get('/api/youtube/videos', (req, res) => {
     const ids = req.query.id;
     if (!ids) return res.status(400).json({ error: "No ids" });

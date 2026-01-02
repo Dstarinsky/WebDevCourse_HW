@@ -13,13 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!username || !password) return;
 
-        // REMOVED: const hashedPassword = await hashPassword(password);
 
         try {
-            const response = await fetch(`${CONFIG.SERVER_URL}/api/login`, { // Use CONFIG.SERVER_URL
+            const response = await fetch(`${CONFIG.SERVER_URL}/api/login`, { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                // SEND RAW PASSWORD
                 body: JSON.stringify({ username, password: password }) 
             });
 

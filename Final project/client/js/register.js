@@ -27,10 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (password !== confirmPassword) return alert("Passwords do not match.");
 
-        // REMOVED: const hashedPassword = await hashPassword(password);
 
         try {
-            const response = await fetch(`${CONFIG.SERVER_URL}/api/register`, { // Use CONFIG.SERVER_URL
+            const response = await fetch(`${CONFIG.SERVER_URL}/api/register`, { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 // SEND RAW PASSWORD

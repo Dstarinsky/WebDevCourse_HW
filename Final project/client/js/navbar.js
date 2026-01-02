@@ -1,24 +1,24 @@
 // client/js/navbar.js
 
-// --- 1. IMMEDIATE SECURITY & REDIRECT CHECK ---
+// --- IMMEDIATE SECURITY & REDIRECT CHECK ---
 (function() {
     const currentPage = window.location.pathname.split("/").pop();
     const currentUser = sessionStorage.getItem('currentUser');
     
-    // A. Protected Pages: Guest -> Login
+    // Protected Pages: Guest -> Login
     const protectedPages = ['search.html', 'playlists.html'];
     if (protectedPages.includes(currentPage) && !currentUser) {
         window.location.replace('login.html'); 
     }
 
-    // B. Guest Pages: Logged In User -> Home
+    // Guest Pages: Logged In User -> Home
     const guestPages = ['login.html', 'register.html'];
     if (guestPages.includes(currentPage) && currentUser) {
         window.location.replace('index.html');
     }
 })();
 
-// --- 2. Navbar Rendering (Waits for DOM) ---
+// --- Navbar Rendering  ---
 document.addEventListener("DOMContentLoaded", () => {
     const navbarContainer = document.getElementById("main-navbar");
     if (navbarContainer) {
@@ -26,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const isLoggedIn = !!currentUser;
 
         // Conditional Links
-        // ADDED 'text-nowrap' to the classes below
         const linksHtml = `
             <li class="nav-item">
                 <a class="nav-link text-nowrap" href="index.html">Home</a>
@@ -69,7 +68,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // --- Helper Functions ---
-
 function initTheme() {
     document.documentElement.setAttribute('data-bs-theme', 'dark');
 }
@@ -81,10 +79,7 @@ function renderAuthSection() {
     if (currentUserJSON) {
         const user = JSON.parse(currentUserJSON);
         
-        // --- LAYOUT ---
-        // 1. Profile Picture: REMOVED completely.
-        // 2. Name: d-none d-lg-block (Hidden on mobile, Visible on Desktop).
-        // 3. Logout Button: w-100 (Full width on mobile), w-lg-auto (Normal on Desktop).
+       
         authSection.innerHTML = `
             <div class="d-lg-flex align-items-center gap-3 text-center">
                 
