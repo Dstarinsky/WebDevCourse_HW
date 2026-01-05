@@ -32,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`${CONFIG.SERVER_URL}/api/register`, { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                // SEND RAW PASSWORD
                 body: JSON.stringify({ username, password: password, firstName, imgUrl }) 
             });
 

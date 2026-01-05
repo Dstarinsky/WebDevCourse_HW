@@ -53,7 +53,7 @@ const writeUsers = (users) => {
 
 // --- Routes ---
 
-// REGISTER (SECURE)
+// REGISTER
 app.post('/api/register', async (req, res) => {
     const { username, password, firstName, imgUrl } = req.body;
     const users = readUsers();
@@ -88,7 +88,7 @@ app.post('/api/login', async (req, res) => {
         return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Compare the raw password sent from client with the hash in DB
+    // Compare the raw password sent from client with the hash
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (isMatch) {

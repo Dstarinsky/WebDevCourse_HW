@@ -1,7 +1,4 @@
-/* =========================================
-   THEME: MIDNIGHT NEON (Cyberpunk/Synthwave)
-   FONTS: Outfit (Headings) + Inter (Body)
-   ========================================= */
+
 
    :root {
     /* --- Palette --- */
@@ -13,10 +10,9 @@
     --color-shock: #4A00E0;     /* Secondary Gradient Purple */
 
     /* --- Theme Variables --- */
-    /* Background: Deep Void to Midnight Gradient */
     --body-bg-gradient: linear-gradient(135deg, var(--color-void) 0%, var(--color-midnight) 100%);
     
-    /* Cards: Glassmorphism effect (Semi-transparent with Blur) */
+    /* Cards */
     --card-bg: rgba(48, 43, 99, 0.6); 
     --card-border: 1px solid rgba(142, 45, 226, 0.3);
     
@@ -41,9 +37,6 @@
     color-scheme: dark;
 }
 
-/* =========================================
-   GENERAL LAYOUT & TYPOGRAPHY
-   ========================================= */
 
 body {
     background: var(--body-bg-gradient);
@@ -63,9 +56,7 @@ h1, h2, h3, h4, h5, h6, .navbar-brand, .btn-custom, .student-name, .fw-bold {
     letter-spacing: -0.02em;
 }
 
-/* =========================================
-   NAVBAR
-   ========================================= */
+/* NAVBAR */
 
 nav.navbar {
     background-color: var(--nav-bg) !important;
@@ -95,11 +86,9 @@ nav.navbar .nav-link:hover, nav.navbar .nav-link.active {
     text-shadow: 0 0 8px rgba(0, 242, 96, 0.5);
 }
 
-/* =========================================
-   CUSTOM HAMBURGER ANIMATION (Midnight Neon)
-   ========================================= */
+/* CUSTOM HAMBURGER ANIMATION */
 
-/* 1. Remove default Bootstrap border/focus */
+/* Remove default Bootstrap border/focus */
 .navbar-toggler {
     border: none;
     padding: 0;
@@ -111,7 +100,7 @@ nav.navbar .nav-link:hover, nav.navbar .nav-link.active {
     box-shadow: none !important;
 }
 
-/* 2. The Lines (Spans) */
+/* The Lines  */
 .navbar-toggler-icon {
     background-image: none !important; /* Kill default SVG */
     background-color: var(--color-neon);
@@ -154,7 +143,6 @@ nav.navbar .nav-link:hover, nav.navbar .nav-link.active {
 }
 
 /* 3. The 'X' Animation (When Menu is OPEN) */
-/* Bootstrap adds 'aria-expanded="true"' when open. We use that hook. */
 
 /* Middle line disappears */
 .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
@@ -185,9 +173,7 @@ nav.navbar .nav-link:hover, nav.navbar .nav-link.active {
     background-color: #fff;
 }
 
-/* =========================================
-   CARDS & PROFILE
-   ========================================= */
+/* CARDS & PROFILE */
 
 .hero-section {
     flex: 1;
@@ -250,9 +236,7 @@ nav.navbar .nav-link:hover, nav.navbar .nav-link.active {
 }
 .description { color: var(--text-secondary); font-size: 0.9rem; padding: 0 20px; margin-bottom: 30px; }
 
-/* =========================================
-   BUTTONS
-   ========================================= */
+/* BUTTONS */
 
 .btn-custom {
     background: var(--btn-primary-bg);
@@ -291,9 +275,7 @@ nav.navbar .nav-link:hover, nav.navbar .nav-link.active {
     border-color: var(--color-neon);
 }
 
-/* =========================================
-   INPUTS & FORMS
-   ========================================= */
+/* INPUTS & FORMS */
 
 .form-control, .form-select {
     background-color: rgba(255, 255, 255, 0.05);
@@ -312,9 +294,7 @@ nav.navbar .nav-link:hover, nav.navbar .nav-link.active {
 
 .form-control::placeholder { color: rgba(255, 255, 255, 0.3); }
 
-/* =========================================
-   PLAYLISTS & SONGS
-   ========================================= */
+/* PLAYLISTS & SONGS */
 
 .sidebar-container {
     background-color: var(--card-bg);
@@ -373,9 +353,7 @@ nav.navbar .nav-link:hover, nav.navbar .nav-link.active {
 	align-items:center;
 }
 
-/* =========================================
-   MODALS & UTILITIES
-   ========================================= */
+/* MODALS & UTILITIES */
 
 .modal-content {
     background-color: #1a1a2e; /* Solid dark color for readability */

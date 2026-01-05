@@ -1,4 +1,3 @@
-// client/js/navbar.js
 
 // --- IMMEDIATE SECURITY & REDIRECT CHECK ---
 (function() {

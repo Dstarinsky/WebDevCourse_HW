@@ -1,4 +1,4 @@
-// client/js/playlists.js
+
 
 let currentUser = null;
 let currentPlaylistName = null;
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load YouTube API
     loadYouTubeAPI();
 
-    // 3. Initial Data Fetch
+    //  Initial Data Fetch
     fetchPlaylistsFromServer().then(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const playlistParam = urlParams.get('id');
