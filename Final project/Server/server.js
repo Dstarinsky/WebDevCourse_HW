@@ -1,161 +1,120 @@
-// server/server.js
 require('dotenv').config();
-
 const express = require('express');
-const fs = require('fs');
 const path = require('path');
-const cors = require('cors');
+const session = require('express-session');
+const SQLiteStore = require('connect-sqlite3')(session);
 const bodyParser = require('body-parser');
 const multer = require('multer');
-const https = require('https');
-const bcrypt = require('bcryptjs'); 
+const FavoriteController = require('./controllers/FavoriteController'); 
+
+// Configure Upload Storage
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname, '../client/uploads'));
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
+});
+const upload = multer({ storage: storage });
+
+// --- IMPORT CONTROLLERS ---
+const AuthController = require('./controllers/AuthController');
+const YouTubeController = require('./controllers/YouTubeController');
+const PlaylistController = require('./controllers/PlaylistController');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
+app.get('/favicon.ico', (req, res) => res.status(204).end());
 
-const DATA_DIR = path.join(__dirname, 'data');
-const DATA_FILE = path.join(DATA_DIR, 'users.json');
-const UPLOADS_DIR = path.join(__dirname, 'uploads');
+// --- 1. CONFIGURATION ---
 
-// --- Middleware ---
-app.use(cors());
-app.use(bodyParser.json({ limit: '50mb' })); 
+// Set View Engine to EJS
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// Serve Static Files (CSS, Images, Client JS if needed)
 app.use(express.static(path.join(__dirname, '../client')));
-app.use('/uploads', express.static(UPLOADS_DIR)); 
 
-// --- Initialization ---
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
-if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR);
+// Parse Form Data (Required for POST requests)
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
-// --- Configure Multer ---
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, UPLOADS_DIR),
-    filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname.replace(/\s+/g, '_'))
+// --- 2. MIDDLEWARE ---
+
+// FIX: Auto-redirect .html requests to extensionless routes
+// (Prevents "404 Not Found" if you type /login.html)
+app.use((req, res, next) => {
+    if (req.path.endsWith('.html')) {
+        const newPath = req.path.slice(0, -5);
+        return res.redirect(301, newPath);
+    }
+    next();
 });
-const upload = multer({ 
-    storage: storage,
-    limits: { fileSize: 10 * 1024 * 1024 } 
-});
 
-// --- Helper Functions ---
-const readUsers = () => {
-    if (!fs.existsSync(DATA_FILE)) return [];
-    try {
-        const data = fs.readFileSync(DATA_FILE);
-        return JSON.parse(data);
-    } catch (e) { return []; }
+// Session Configuration (Stored in SQLite database)
+app.use(session({
+    store: new SQLiteStore({ 
+        db: 'sessions.sqlite', // File name for sessions
+        dir: './database'      // Directory to save it
+    }),
+    secret: 'your_secret_key_change_this',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { 
+        maxAge: 1000 * 60 * 60 * 24, // 24 Hours
+        httpOnly: true 
+    }
+}));
+
+// Auth Protection Middleware
+const requireAuth = (req, res, next) => {
+    if (!req.session.userId) {
+        return res.redirect('/login');
+    }
+    // Make user data available to all views automatically
+    res.locals.user = req.session.user;
+    next();
 };
 
-const writeUsers = (users) => {
-    fs.writeFileSync(DATA_FILE, JSON.stringify(users, null, 2));
-};
+// --- 3. ROUTES (MVC Architecture) ---
 
-// --- Routes ---
+// -- Authentication Routes --
+app.get('/login', (req, res) => AuthController.showLogin(req, res));
+app.post('/login', (req, res) => AuthController.login(req, res));
 
-// REGISTER
-app.post('/api/register', async (req, res) => {
-    const { username, password, firstName, imgUrl } = req.body;
-    const users = readUsers();
+app.get('/register', (req, res) => AuthController.showRegister(req, res));
+app.post('/register', (req, res) => AuthController.register(req, res));
 
-    if (users.find(u => u.username === username)) {
-        return res.status(400).json({ error: "Username already taken" });
-    }
+app.get('/logout', (req, res) => AuthController.logout(req, res));
 
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-   
-    const newUser = { 
-        username, 
-        password: hashedPassword, 
-        firstName, 
-        imgUrl, 
-        playlists: [] 
-    };
-    
-    users.push(newUser);
-    writeUsers(users);
-    res.status(201).json({ success: true });
+// -- Protected Main Dashboard --
+app.get('/', requireAuth, (req, res) => {
+    res.render('index', { user: req.session.user });
 });
 
-// LOGIN 
-app.post('/api/login', async (req, res) => {
-    const { username, password } = req.body;
-    const users = readUsers();
-    const user = users.find(u => u.username === username);
+// -- YouTube Favorites Routes --
+app.get('/favorites', requireAuth, (req, res) => FavoriteController.index(req, res));
+app.post('/favorites/add', requireAuth, (req, res) => FavoriteController.add(req, res));
+app.post('/favorites/remove', requireAuth, (req, res) => FavoriteController.remove(req, res));
 
-    if (!user) {
-        return res.status(401).json({ error: "Invalid credentials" });
-    }
+// -- Playlist Management Routes --
+app.get('/playlists', requireAuth, (req, res) => PlaylistController.index(req, res));           // List all playlists
+app.post('/playlists/create', requireAuth, (req, res) => PlaylistController.create(req, res));   // Create new
+app.post('/playlists/delete', requireAuth, (req, res) => PlaylistController.delete(req, res));   // Delete playlist
 
-    // Compare the raw password sent from client with the hash
-    const isMatch = await bcrypt.compare(password, user.password);
+app.get('/playlists/:id', requireAuth, (req, res) => PlaylistController.show(req, res));         // View Playlist + Player
+app.post('/playlists/:id/add', requireAuth, (req, res) => PlaylistController.addSong(req, res)); // Add song to playlist
+app.post('/playlists/:id/remove', requireAuth, (req, res) => PlaylistController.removeSong(req, res)); // Remove song
+app.post('/playlists/add-from-search', requireAuth, (req, res) => PlaylistController.addFromSearch(req, res));
+app.post('/playlists/:id/upload', requireAuth, upload.single('mp3file'), (req, res) => PlaylistController.uploadSong(req, res));
+app.post('/playlists/rename', requireAuth, (req, res) => PlaylistController.rename(req, res));
+app.post('/playlists/:id/rate', requireAuth, (req, res) => PlaylistController.rateSong(req, res));
+app.post('/playlists/reorder', requireAuth, (req, res) => PlaylistController.reorder(req, res));
 
-    if (isMatch) {
-        const { password, ...userWithoutPass } = user;
-        res.json({ success: true, user: userWithoutPass });
-    } else {
-        res.status(401).json({ error: "Invalid credentials" });
-    }
-});
 
-// GET PLAYLISTS
-app.get('/api/playlists/:username', (req, res) => {
-    const user = readUsers().find(u => u.username === req.params.username);
-    user ? res.json(user.playlists || []) : res.status(404).json({ error: "User not found" });
-});
 
-//  SAVE PLAYLISTS
-app.post('/api/playlists', (req, res) => {
-    const { username, playlists } = req.body;
-    const users = readUsers();
-    const idx = users.findIndex(u => u.username === username);
-    
-    if (idx !== -1) {
-        users[idx].playlists = playlists;
-        writeUsers(users);
-        res.json({ success: true });
-    } else {
-        res.status(404).json({ error: "User not found" });
-    }
-});
-
-//  UPLOAD MP3
-app.post('/api/upload', upload.single('mp3file'), (req, res) => {
-    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
-    res.json({ 
-        success: true, 
-        fileUrl: `/uploads/${req.file.filename}`, 
-        fileName: req.file.originalname 
-    });
-});
-
-// YOUTUBE SEARCH
-app.get('/api/youtube/search', (req, res) => {
-    const query = req.query.q;
-    if (!query) return res.status(400).json({ error: "No query" });
-
-    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoCategoryId=10&maxResults=12&q=${encodeURIComponent(query)}&key=${YOUTUBE_API_KEY}`;
-    
-    https.get(url, (apiRes) => {
-        let data = '';
-        apiRes.on('data', chunk => data += chunk);
-        apiRes.on('end', () => res.json(JSON.parse(data)));
-    }).on('error', (e) => res.status(500).json({ error: e.message }));
-});
-
-//  YOUTUBE VIDEO DETAILS
-app.get('/api/youtube/videos', (req, res) => {
-    const ids = req.query.id;
-    if (!ids) return res.status(400).json({ error: "No ids" });
-    const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${ids}&key=${YOUTUBE_API_KEY}`;
-    https.get(url, (apiRes) => {
-        let data = '';
-        apiRes.on('data', chunk => data += chunk);
-        apiRes.on('end', () => res.json(JSON.parse(data)));
-    }).on('error', (e) => res.status(500).json({ error: e.message }));
-});
-
+// --- 4. START SERVER ---
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server running at http://localhost:${PORT}`);
 });

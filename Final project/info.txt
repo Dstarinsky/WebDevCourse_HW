@@ -1,2 +1,0 @@
-Deployed Webapp URL: https://webdevcourse.ishkatan.dev/
-Github Repo: https://github.com/Dstarinsky/WebDevCourse_HW/tree/main/Final%20project
